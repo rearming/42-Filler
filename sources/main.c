@@ -44,7 +44,7 @@ void	debug_launch(int argc, char **argv)
 	filler.map = get_map(filler.map_size, 'O');
 	print_heatmap(filler.map, filler.map_size, STDOUT_FILENO);
 //	ft_printf("enemy point: [%i]\n", filler.map[12][14]);
-	make_heatmap(filler.map, filler.map_size, (t_point){14, 12, 0});
+	make_heatmap(filler.map, filler.map_size, (t_point) {14, 12, 0});
 	ft_printf_fd(STDOUT_FILENO, "\n-------------------------------\n");
 	print_heatmap(filler.map, filler.map_size, STDOUT_FILENO);
 }

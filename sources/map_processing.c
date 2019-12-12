@@ -1,58 +1,63 @@
 #include "filler.h"
 
-int		g_rec_call = 0;
+int		g_rec_call = -1;
 
-//void	process_step(int **map, t_point map_size, t_point point, t_point step)
-//{
-//	if (point.x < 0 || point.x >= map_size.x || point.y < 0 || point.y >= map_size.y)
-//		return ;
-//	if (map[point.y][point.x] != EMPTY
-//		&& map[point.y][point.x] != ENEMY
-//		&& map[point.y][point.x] != PLAYER)
-//		return ;
-//	if (map[point.y][point.x] == EMPTY)
-//		map[point.y][point.x] = point.val;
-//	ft_printf("\ncall: [%i], x: [%i], y: [%i]\n", g_rec_call++, point.x, point.y);
-//	print_heatmap(map, map_size, STDOUT_FILENO);
-//	point.val++;
-//	point.x += step.x;
-//	point.y += step.y;
-//	make_heatmap(map, map_size, point);
-//}
-//
-//void	make_heatmap(int **map, t_point map_size, t_point point)
-//{
-//	process_step(map, map_size, point, (t_point){-1, -1});
-//	process_step(map, map_size, point, (t_point){0, -1});
-//	process_step(map, map_size, point, (t_point){+1, -1});
-//	process_step(map, map_size, point, (t_point){-1, 0});
-//	process_step(map, map_size, point, (t_point){+1, 0});
-//	process_step(map, map_size, point, (t_point){-1, +1});
-//	process_step(map, map_size, point, (t_point){0, +1});
-//	process_step(map, map_size, point, (t_point){+1, +1});
-//}
+static inline int is_visited(int current_value, int point_value)
+{
+	return (current_value == point_value + 2);
+}
+
+void		fill_around(int **map, t_point map_size, t_point center)
+{
+	t_point		pos;
+	t_point		to_visit[8];
+	int			visit_i = 0;
+
+	pos.y = center.y - 1;
+	pos.val = center.val;
+	ft_printf("\ncall: [%i], x: [%i], y: [%i]\n", ++g_rec_call, center.x, center.y);
+	while (pos.y <= center.y + 1 && pos.y < map_size.y)
+	{
+		pos.x = center.x - 1;
+		while (pos.x <= center.x + 1 && pos.x < map_size.x)
+		{
+			if (is_visited(pos.val, map[pos.y][pos.x]) || pos.x < 0 || pos.y < 0 || (pos.x == center.x && pos.y == center.y))
+			{
+				pos.x++;
+				continue;
+			}
+			if (map[pos.y][pos.x] == EMPTY)
+			{
+				map[pos.y][pos.x] = pos.val;
+				print_heatmap(map, map_size, STDOUT_FILENO);
+			}
+			else if (map[pos.y][pos.x] == ENEMY)
+			{
+				ft_printf("ENEMY? call: [%i] x: [%i], y: [%i]\n", g_rec_call, pos.x, pos.y);
+				to_visit[visit_i] = pos;
+				visit_i++;
+			}
+			pos.x++;
+		}
+		pos.y++;
+	}
+	if (!is_visited(pos.val, map[center.y][center.x]))
+	{
+		map[center.y][center.x] -= 1;
+		ft_printf("VISITED? call: [%i]\n", g_rec_call);
+	}
+	for (int i = 0; i < visit_i; i++)
+	{
+//		map[to_visit[i].y][to_visit[i].x] = VISITED;
+		fill_around(map, map_size, to_visit[i]);
+	}
+}
 
 void	make_heatmap(int **map, t_point map_size, t_point point)
 {
-	if (point.x < 0 || point.x >= map_size.x || point.y < 0 || point.y >= map_size.y)
-		return ;
-	if (map[point.y][point.x] != EMPTY
-		&& map[point.y][point.x] != ENEMY
-		&& map[point.y][point.x] != PLAYER)
-		return ;
-	if (map[point.y][point.x] == EMPTY)
-		map[point.y][point.x] = point.val;
-	ft_printf("\ncall: [%i], x: [%i], y: [%i]\n", g_rec_call++, point.x, point.y);
-	print_heatmap(map, map_size, STDOUT_FILENO);
 	point.val++;
-	make_heatmap(map, map_size, (t_point){point.x - 1, point.y - 1, point.val});
-	make_heatmap(map, map_size, (t_point){point.x, point.y - 1, point.val});
-	make_heatmap(map, map_size, (t_point){point.x + 1, point.y - 1, point.val});
-	make_heatmap(map, map_size, (t_point){point.x - 1, point.y, point.val});
-//	make_heatmap(map, map_size, (t_point){point.x + 1, point.y, point.val});
-//	make_heatmap(map, map_size, (t_point){point.x - 1, point.y + 1, point.val});
-//	make_heatmap(map, map_size, (t_point){point.x, point.y + 1, point.val});
-	make_heatmap(map, map_size, (t_point){point.x + 1, point.y + 1, point.val});
+
+	fill_around(map, map_size, point);
 }
 
 void	fill_map_line(char *line, int *map_line, char player)

@@ -18,7 +18,7 @@ void		get_player_and_enemy(char *line, char *out_player, char *out_enemy);
 */
 
 void fill_map_line(char *line, int *map_line, char player);
-void	make_heatmap(int **map, t_point map_size, t_point point);
+void make_heatmap(int **map, t_point map_size, t_point point);
 
 /*
 **	utils
