@@ -1,7 +1,6 @@
 #include "filler.h"
 
-//todo replace debug_fd with STDIN_FILENO
-int		**get_map(t_cell map_size, char player, int debug_fd)
+int **get_map(t_point map_size, char player)
 {
 	int		**map;
 	t_cell	cell;
@@ -9,12 +8,12 @@ int		**get_map(t_cell map_size, char player, int debug_fd)
 
 	map = safe_malloc(map_size.y * sizeof(int*), raise_error);
 	cell.y = 0;
-	gnl(debug_fd, &line);
+	gnl(FD, &line);
 	free(line);
 	while (cell.y < map_size.y)
 	{
 		map[cell.y] = safe_malloc(map_size.x * sizeof(int), raise_error);
-		gnl(debug_fd, &line);
+		gnl(FD, &line);
 		fill_map_line(line, map[cell.y], player);
 		free(line);
 		cell.y++;
@@ -22,9 +21,9 @@ int		**get_map(t_cell map_size, char player, int debug_fd)
 	return (map);
 }
 
-t_cell		get_map_size(char *line)
+t_point	get_map_size(char *line)
 {
-	t_cell		map_size;
+	t_point		map_size;
 
 	map_size.x = ft_atoi(&line[7]);
 	map_size.y = ft_atoi(&line[7 + ft_count_digits(map_size.x) + 1]);

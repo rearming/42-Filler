@@ -3,6 +3,14 @@
 
 #include "libft.h"
 
+typedef int			t_bool;
+
+typedef struct		s_point
+{
+	int				x;
+	int				y;
+}					t_point;
+
 typedef struct		s_cell
 {
 	int				x;
@@ -10,11 +18,18 @@ typedef struct		s_cell
 	int				value;
 }					t_cell;
 
+typedef struct		s_block
+{
+	char			**shape;
+	t_point			size;
+	t_point			offset;
+}					t_block;
+
 typedef struct		s_filler
 {
 	char			player;
 	char			enemy;
-	t_cell			map_size;
+	t_point			map_size;
 	int				**map;
 }					t_filler;
 

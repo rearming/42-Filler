@@ -22,7 +22,8 @@ set(sources
         sources/map_parsing.c
         sources/debug.c
         sources/parsing.c
-        )
+        sources/utils.c
+        sources/block_parsing.c)
 
 add_executable(sleonard.filler
         ${sources}

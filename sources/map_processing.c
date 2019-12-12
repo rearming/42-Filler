@@ -1,11 +1,6 @@
 #include "filler.h"
 
-static inline int is_visited(int current_value, int point_value)
-{
-	return (current_value == point_value + 2);
-}
-
-void		fill_around(int **map, t_cell map_size, t_cell center, int center_value)
+void		fill_around(int **map, t_point map_size, t_cell center, int center_value)
 {
 	t_cell		pos;
 	t_cell		cells_to_visit[8];
@@ -39,7 +34,7 @@ void		fill_around(int **map, t_cell map_size, t_cell center, int center_value)
 	}
 }
 
-int		count_starts(int **map, t_cell map_size, int value_to_find)
+int		count_starts(int **map, t_point map_size, int value_to_find)
 {
 	int		x;
 	int		y;
@@ -62,7 +57,7 @@ int		count_starts(int **map, t_cell map_size, int value_to_find)
 }
 
 t_cell		*find_starts(int **map,
-					t_cell map_size,
+					t_point map_size,
 					int value_to_find,
 					int *out_starts_num)
 {
@@ -93,7 +88,7 @@ t_cell		*find_starts(int **map,
 	return (NULL);
 }
 
-void	make_heatmap(int **map, t_cell map_size, int center_value)
+void	make_heatmap(int **map, t_point map_size, int center_value)
 {
 	int			i;
 	int			starts_num;
@@ -108,33 +103,10 @@ void	make_heatmap(int **map, t_cell map_size, int center_value)
 		i = 0;
 		while (i < starts_num)
 		{
-			fill_around(map, map_size, (t_cell){starts[i].x, starts[i].y, starts[0].value}, starts[0].value - 1);
-//			ft_printf("done with center_value: [%i]\n", center_value);
+			fill_around(map, map_size,
+					(t_cell){starts[i].x, starts[i].y, starts[0].value}, starts[0].value - 1);
 			i++;
 		}
 		free(starts);
 	}
 }
-
-//void	make_heatmap(int **map, t_cell map_size, int center_value)
-//{
-//	int			i;
-//	int			starts_num;
-//	t_cell		*starts;
-//
-//	while (21)
-//	{
-//		starts_num = 0;
-//		starts = find_starts(map, map_size, center_value++, &starts_num);
-//		if (!starts)
-//			break ;
-//		i = 0;
-//		while (i < starts_num)
-//		{
-//			fill_around(map, map_size, (t_cell){starts[i].x, starts[i].y, starts[0].value}, starts[0].value - 1);
-////			ft_printf("done with center_value: [%i]\n", center_value);
-//			i++;
-//		}
-//		free(starts);
-//	}
-//}
