@@ -3,9 +3,9 @@
 
 # define CMP_SUCCESS 0
 
-# define PLAYER (-3)
+# define PLAYER (-21)
 # define ENEMY (0)
-# define EMPTY (-2)
+# define EMPTY (-42)
 
 # define TRUE 1
 # define FALSE 0

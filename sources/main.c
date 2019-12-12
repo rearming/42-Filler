@@ -4,13 +4,13 @@ void	filler(void)
 {
 	t_filler	filler;
 	char		*line = NULL;
-	t_point		new_map_size;
+	t_cell		new_map_size;
 
 	gnl(STDIN_FILENO, &line);
 	get_player_and_enemy(line, &filler.player, &filler.enemy);
 	gnl(STDIN_FILENO, &line);
 	filler.map_size = get_map_size(line);
-	filler.map = get_map(filler.map_size, filler.player);
+	filler.map = get_map(filler.map_size, filler.player, 0);
 
 //	ft_printf_fd(STDERR_FILENO, "Player: [%c]\n", filler.player);
 	print_heatmap(filler.map, filler.map_size, 0);
@@ -33,20 +33,33 @@ void	filler(void)
 	}
 }
 
+void	free_map(int **map, t_cell map_size)
+{
+	int i;
+
+	i = 0;
+	while (i < map_size.y)
+	{
+		free(map[i]);
+		i++;
+	}
+	free(map);
+}
+
 void	debug_launch(int argc, char **argv)
 {
 	t_filler	filler;
 
 	if (argc != 2)
 		ft_printf_fd(STDERR_FILENO, "GIVE ME ARGUMENTS!");
-	open(argv[1], O_RDONLY);
-	filler.map_size = (t_point){.x = 17, .y = 15};
-	filler.map = get_map(filler.map_size, 'O');
+
+	filler.map_size = (t_cell){.x = 17, .y = 15};
+	filler.map = get_map(filler.map_size, 'X', open(argv[1], O_RDONLY));
+
+	make_heatmap(filler.map, filler.map_size, ENEMY);
+
 	print_heatmap(filler.map, filler.map_size, STDOUT_FILENO);
-//	ft_printf("enemy point: [%i]\n", filler.map[12][14]);
-	make_heatmap(filler.map, filler.map_size, (t_point) {14, 12, 0});
-	ft_printf_fd(STDOUT_FILENO, "\n-------------------------------\n");
-	print_heatmap(filler.map, filler.map_size, STDOUT_FILENO);
+	free_map(filler.map, filler.map_size);
 }
 
 int		main(int argc, char **argv)

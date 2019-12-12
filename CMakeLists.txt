@@ -18,7 +18,11 @@ set(sources
         sources/algo.c
         sources/error.c
         sources/safe_malloc.c
-        sources/map_processing.c sources/parsing.c sources/debug.c)
+        sources/map_processing.c
+        sources/map_parsing.c
+        sources/debug.c
+        sources/parsing.c
+        )
 
 add_executable(sleonard.filler
         ${sources}
