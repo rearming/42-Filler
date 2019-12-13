@@ -22,7 +22,6 @@ typedef struct		s_block
 {
 	char			**shape;
 	t_point			size;
-	t_point			offset;
 }					t_block;
 
 typedef struct		s_filler

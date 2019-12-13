@@ -20,8 +20,8 @@ char		**get_block_shape(t_point block_size)
 
 t_block		parse_block(void)
 {
-	t_block block;
-	char *line;
+	t_block		block;
+	char		*line;
 
 	gnl(INPUT_FD, &line);
 	if (ft_strncmp("Piece", line, 5) == CMP_SUCCESS)

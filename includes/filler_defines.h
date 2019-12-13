@@ -3,20 +3,20 @@
 
 # define DEBUG_FD 3
 # define RELEASE_FD STDIN_FILENO
-//# define INPUT_FD RELEASE_FD
-# define INPUT_FD DEBUG_FD
+# define INPUT_FD RELEASE_FD
+//# define INPUT_FD DEBUG_FD
 
 # define DEBUG_OUT_FD STDOUT_FILENO
 # define RELEASE_OUT_FD STDERR_FILENO
-//# define OUT_FD RELEASE_OUT_FD
-# define OUT_FD DEBUG_OUT_FD
+# define OUT_FD RELEASE_OUT_FD
+//# define OUT_FD DEBUG_OUT_FD
 
 # define CMP_SUCCESS 0
 # define NOT_SET (-1)
 
 # define PLAYER (-21)
 # define ENEMY (0)
-# define EMPTY (-42)
+# define EMPTY (INT32_MAX - 1)
 
 # define CANT_PLACE (-1)
 

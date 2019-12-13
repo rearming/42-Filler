@@ -1,7 +1,5 @@
 #include "filler.h"
 
-//todo correct size of block (by shape)
-
 static inline t_bool in_shape(t_point block_pos, char **shape)
 {
 	return (shape[block_pos.y][block_pos.x] == SHAPE_CHAR);
@@ -76,8 +74,8 @@ t_point		place_block(int **map, t_point map_size, t_block block)
 		}
 		place_pos.y++;
 	}
-	ft_printf_fd(OUT_FD, "best_coast of place: [%i]\n", best_coast);
-	ft_printf_fd(OUT_FD, "best_place x: [%i], y: [%i]\n", best_place.x, best_place.y);
-//	print_heatmap(map, map_size);
+//	ft_printf_fd(OUT_FD, "best_coast of place: [%i]\n", best_coast);
+//	ft_printf_fd(OUT_FD, "best_place x: [%i], y: [%i]\n", best_place.x, best_place.y);
+	clean_chr_mtrx(block.shape);
 	return (best_place);
 }

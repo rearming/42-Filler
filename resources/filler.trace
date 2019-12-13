@@ -1,5 +1,4 @@
-seed = 4271
-X: error on input
-players/hcao.filler won
+seed = 1290
+../cmake-build-debug/sleonard.filler won
 Score:
-14AGAINST73
+108AGAINST60

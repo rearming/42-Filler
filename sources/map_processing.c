@@ -66,9 +66,10 @@ t_cell		*find_starts(int **map,
 {
 	int			x;
 	int			y;
-	int			start_num = 0;
+	int			start_num;
 	t_cell		*starts;
 
+	start_num = 0;
 	*out_starts_num = count_starts(map, map_size, value_to_find);
 	starts = safe_malloc(*out_starts_num * sizeof(t_cell), raise_error);
 	y = 0;
@@ -88,6 +89,7 @@ t_cell		*find_starts(int **map,
 	}
 	if (start_num)
 		return (starts);
+	free(starts);
 	return (NULL);
 }
 
@@ -101,7 +103,6 @@ void	make_heatmap(int **map, t_point map_size, int center_value)
 	{
 		starts_num = 0;
 		starts = find_starts(map, map_size, center_value++, &starts_num);
-		ft_printf_fd(OUT_FD, "starts num: [%i]\n", starts_num);
 		if (!starts)
 			break ;
 		i = 0;

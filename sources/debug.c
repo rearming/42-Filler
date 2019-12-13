@@ -51,8 +51,6 @@ void	print_block(t_block block)
 
 	ft_printf_fd(OUT_FD, "block size ");
 	print_point(&block.size, NULL);
-	ft_printf_fd(OUT_FD, "block offset ");
-	print_point(&block.offset, NULL);
 	y = 0;
 	while (block.shape[y])
 	{
