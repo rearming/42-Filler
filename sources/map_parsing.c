@@ -1,6 +1,6 @@
 #include "filler.h"
 
-int **get_map(t_point map_size, char player)
+int			**get_map(t_point map_size, char player)
 {
 	int		**map;
 	t_cell	cell;
@@ -8,12 +8,12 @@ int **get_map(t_point map_size, char player)
 
 	map = safe_malloc(map_size.y * sizeof(int*), raise_error);
 	cell.y = 0;
-	gnl(FD, &line);
+	gnl(INPUT_FD, &line);
 	free(line);
 	while (cell.y < map_size.y)
 	{
 		map[cell.y] = safe_malloc(map_size.x * sizeof(int), raise_error);
-		gnl(FD, &line);
+		gnl(INPUT_FD, &line);
 		fill_map_line(line, map[cell.y], player);
 		free(line);
 		cell.y++;
@@ -21,7 +21,7 @@ int **get_map(t_point map_size, char player)
 	return (map);
 }
 
-t_point	get_map_size(char *line)
+t_point		get_map_size(char *line)
 {
 	t_point		map_size;
 
@@ -31,7 +31,7 @@ t_point	get_map_size(char *line)
 	return (map_size);
 }
 
-void	fill_map_line(char *line, int *map_line, char player)
+void		fill_map_line(char *line, int *map_line, char player)
 {
 	int		i;
 	int		x;

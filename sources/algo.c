@@ -12,6 +12,11 @@ static inline t_bool is_touching(t_point block_pos, char **shape, int cell)
 	return (in_shape(block_pos, shape) && cell == PLAYER);
 }
 
+static inline t_bool is_enemy(t_point block_pos, char **shape, int cell)
+{
+	return (in_shape(block_pos, shape) && cell == ENEMY);
+}
+
 int		coast_of_place(int **map, t_point map_size, t_block block, t_point place_pos)
 {
 	t_point		check_pos;
@@ -33,6 +38,8 @@ int		coast_of_place(int **map, t_point map_size, t_block block, t_point place_po
 				coast += map[check_pos.y][check_pos.x];
 			if (is_touching(block_pos, block.shape, map[check_pos.y][check_pos.x])) //todo может нужна более сложная проверка
 				touching++;
+			if (is_enemy(block_pos, block.shape, map[check_pos.y][check_pos.x]))
+				return (INT32_MAX);
 			block_pos.x++;
 			check_pos.x++;
 		}
@@ -50,8 +57,7 @@ t_point		place_block(int **map, t_point map_size, t_block block)
 	int			curr_coast;
 	t_point		place_pos;
 	t_point		best_place;
-
-	print_block(block, 0);
+	
 	place_pos = (t_point){0, 0};
 	best_place = (t_point){-1, -1};
 	best_coast = INT32_MAX;
@@ -70,8 +76,8 @@ t_point		place_block(int **map, t_point map_size, t_block block)
 		}
 		place_pos.y++;
 	}
-	ft_printf("best_coast of place: [%i]\n", best_coast);
-	ft_printf("best_place x: [%i], y: [%i]\n", best_place.x, best_place.y);
-	print_heatmap(map, map_size, STDOUT_FILENO);
+	ft_printf_fd(OUT_FD, "best_coast of place: [%i]\n", best_coast);
+	ft_printf_fd(OUT_FD, "best_place x: [%i], y: [%i]\n", best_place.x, best_place.y);
+//	print_heatmap(map, map_size);
 	return (best_place);
 }

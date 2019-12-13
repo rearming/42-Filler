@@ -4,6 +4,9 @@
 # include "libft.h"
 # include "filler_defines.h"
 # include "filler_structs.h"
+# include <fcntl.h>
+
+int gnl2(int fd, char **line);
 
 /*
 **	parsing
@@ -40,9 +43,9 @@ void		free_map(int **map, t_point map_size);
 /*
 **	debug
 */
-void		print_heatmap(int **map, t_point map_size, int fd);
-void		print_block(t_block block, int fd);
-void		print_point(t_point *point, t_cell *cell, int fd);
+void print_heatmap(int **map, t_point map_size);
+void print_block(t_block block);
+void print_point(t_point *point, t_cell *cell);
 t_block		get_block(void);
 
 #endif

@@ -12,10 +12,13 @@ void		fill_around(int **map, t_point map_size, t_cell center, int center_value)
 	while (pos.y <= center.y + 1 && pos.y < map_size.y)
 	{
 		pos.x = center.x - 1;
-		if (pos.y < 0 || pos.x < 0)
-			return ;
 		while (pos.x <= center.x + 1 && pos.x < map_size.x)
 		{
+			if (pos.y < 0 || pos.x < 0)
+			{
+				pos.x++;
+				continue ;
+			}
 			if (pos.x == center.x && pos.y == center.y)
 			{
 				pos.x++;
@@ -98,6 +101,7 @@ void	make_heatmap(int **map, t_point map_size, int center_value)
 	{
 		starts_num = 0;
 		starts = find_starts(map, map_size, center_value++, &starts_num);
+		ft_printf_fd(OUT_FD, "starts num: [%i]\n", starts_num);
 		if (!starts)
 			break ;
 		i = 0;
