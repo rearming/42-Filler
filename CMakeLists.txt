@@ -20,7 +20,6 @@ set(sources
         sources/safe_malloc.c
         sources/map_processing.c
         sources/map_parsing.c
-        sources/debug.c
         sources/parsing.c
         sources/utils.c
         sources/block_parsing.c)

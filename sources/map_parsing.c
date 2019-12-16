@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_parsing.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sleonard <sleonard@student.21-school.ru>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/12/16 15:29:37 by sleonard          #+#    #+#             */
+/*   Updated: 2019/12/16 15:29:38 by sleonard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "filler.h"
 
 int			**get_map(t_point map_size, char player)
 {
 	int		**map;
 	t_cell	cell;
-	char	*line = NULL;
+	char	*line;
 
 	map = safe_malloc(map_size.y * sizeof(int*), raise_error);
 	cell.y = 0;

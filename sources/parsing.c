@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sleonard <sleonard@student.21-school.ru>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/12/16 15:29:45 by sleonard          #+#    #+#             */
+/*   Updated: 2019/12/16 15:29:47 by sleonard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "filler.h"
 
 void		get_player_and_enemy(char *line, char *out_player, char *out_enemy)
@@ -17,4 +29,3 @@ void		get_player_and_enemy(char *line, char *out_player, char *out_enemy)
 	else
 		raise_error(ERR_INVALID_PLAYER_NUMBER);
 }
-

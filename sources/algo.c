@@ -1,70 +1,77 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   algo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sleonard <sleonard@student.21-school.ru>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/12/16 15:29:15 by sleonard          #+#    #+#             */
+/*   Updated: 2019/12/16 15:29:17 by sleonard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "filler.h"
 
-static inline t_bool in_shape(t_point block_pos, char **shape)
+t_bool		impossible(t_filler *filler, t_fuck_norme *fkn)
 {
-	return (shape[block_pos.y][block_pos.x] == SHAPE_CHAR);
-}
-
-static inline t_bool is_touching(t_point block_pos, char **shape, int cell)
-{
-	return (in_shape(block_pos, shape) && cell == PLAYER);
-}
-
-static inline t_bool is_enemy(t_point block_pos, char **shape, int cell)
-{
-	return (in_shape(block_pos, shape) && cell == ENEMY);
-}
-
-int		coast_of_place(int **map, t_point map_size, t_block block, t_point place_pos)
-{
-	t_point		check_pos;
-	t_point		block_pos;
-	int			coast;
-	t_bool		touching;
-
-	touching = FALSE;
-	coast = 0;
-	check_pos.y = place_pos.y;
-	block_pos.y = 0;
-	while (check_pos.y < map_size.y && block_pos.y < block.size.y)
+	while (fkn->check_pos.x < filler->map_size.x
+		&& fkn->block_pos.x < filler->block.size.x)
 	{
-		block_pos.x = 0;
-		check_pos.x = place_pos.x;
-		while (check_pos.x < map_size.x && block_pos.x < block.size.x)
-		{
-			if (in_shape(block_pos, block.shape))
-				coast += map[check_pos.y][check_pos.x];
-			if (is_touching(block_pos, block.shape, map[check_pos.y][check_pos.x])) //todo может нужна более сложная проверка
-				touching++;
-			if (is_enemy(block_pos, block.shape, map[check_pos.y][check_pos.x]))
-				return (INT32_MAX);
-			block_pos.x++;
-			check_pos.x++;
-		}
-		block_pos.y++;
-		check_pos.y++;
+		if (in_shape(fkn->block_pos, filler->block.shape))
+			fkn->coast += filler->map[fkn->check_pos.y][fkn->check_pos.x];
+		if (is_touching(fkn->block_pos, filler->block.shape,
+				filler->map[fkn->check_pos.y][fkn->check_pos.x]))
+			fkn->touching++;
+		if (is_enemy(fkn->block_pos, filler->block.shape,
+				filler->map[fkn->check_pos.y][fkn->check_pos.x]))
+			return (TRUE);
+		fkn->block_pos.x++;
+		fkn->check_pos.x++;
 	}
-	if (touching == TRUE && block_pos.x == block.size.x && block_pos.y == block.size.y)
-		return (coast - PLAYER);
+	return (FALSE);
+}
+
+int			coast_of_place(t_filler *filler, t_point place_pos)
+{
+	t_fuck_norme	f;
+
+	f.touching = FALSE;
+	f.coast = 0;
+	f.check_pos.y = place_pos.y;
+	f.block_pos.y = 0;
+	while (f.check_pos.y < filler->map_size.y
+		&& f.block_pos.y < filler->block.size.y)
+	{
+		f.block_pos.x = 0;
+		f.check_pos.x = place_pos.x;
+		if (impossible(filler, &f))
+			return (INT32_MAX);
+		f.block_pos.y++;
+		f.check_pos.y++;
+	}
+	if (f.touching == TRUE
+		&& f.block_pos.x == filler->block.size.x
+		&& f.block_pos.y == filler->block.size.y)
+		return (f.coast - PLAYER);
 	return (INT32_MAX);
 }
 
-t_point		place_block(int **map, t_point map_size, t_block block)
+t_point		place_block(t_filler *filler)
 {
 	int			best_coast;
 	int			curr_coast;
 	t_point		place_pos;
 	t_point		best_place;
-	
+
 	place_pos = (t_point){0, 0};
 	best_place = (t_point){-1, -1};
 	best_coast = INT32_MAX;
-	while (place_pos.y < map_size.y)
+	while (place_pos.y < filler->map_size.y)
 	{
 		place_pos.x = 0;
-		while (place_pos.x < map_size.x)
+		while (place_pos.x < filler->map_size.x)
 		{
-			curr_coast = coast_of_place(map, map_size, block, place_pos);
+			curr_coast = coast_of_place(filler, place_pos);
 			if (curr_coast < best_coast)
 			{
 				best_coast = curr_coast;
@@ -74,8 +81,6 @@ t_point		place_block(int **map, t_point map_size, t_block block)
 		}
 		place_pos.y++;
 	}
-//	ft_printf_fd(OUT_FD, "best_coast of place: [%i]\n", best_coast);
-//	ft_printf_fd(OUT_FD, "best_place x: [%i], y: [%i]\n", best_place.x, best_place.y);
-	clean_chr_mtrx(block.shape);
+	clean_chr_mtrx(filler->block.shape);
 	return (best_place);
 }
