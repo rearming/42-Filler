@@ -2,3 +2,6 @@
 /cmake-build-debug/
 /sleonard.filler
 /obj/
+*filler.trace*
+game1.txt
+game2.txt
