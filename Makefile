@@ -23,7 +23,7 @@ LIB_INC_DIR = ./libft/includes
 
 #    FLAGS    #
 CFLGS = -Wall -Wextra -Werror
-LFLGS = -L$(LIB_DIR) -lft -L$(LIB_PRINTF) -lftprintf
+LFLGS = -L$(LIB_PRINTF) -lftprintf -L$(LIB_DIR) -lft
 CC = clang
 
 #    LIBFT    #
