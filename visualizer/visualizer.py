@@ -172,8 +172,24 @@ class Gui:
         return self.__pieces_canvas
 
 
+delay = 0.1
+
+
 def exit_esc(event):
     exit(21)
+
+
+def change_delay(event):
+    global delay
+    if event.keysym == "Up":
+        delay -= 0.02
+    if event.keysym == "Down":
+        delay += 0.02
+    print("Current delay: ", delay)
+
+
+def print_key(event):
+    print(event)
 
 
 def get_color(char):
@@ -182,20 +198,22 @@ def get_color(char):
     return colors[char]
 
 
+def visualize(board_renderer, pieces_renderer, _boards, _pieces, i):
+    if i >= len(_boards):
+        return
+    board_renderer.redraw_board(_boards[i])
+    pieces_renderer.redraw_piece(_pieces[i])
+    window.update()
+    window.after(int(delay * 1000), visualize, board_renderer, pieces_renderer, _boards, _pieces, i + 1)
+
+
 def main():
     gui = Gui()
 
     board_renderer = GridRenderer(parser.get_board_size(), gui.get_board_canvas())
     pieces_renderer = GridRenderer(parser.get_piece_size(), gui.get_pieces_canvas())
 
-    _boards = parser.get_boards()
-    _pieces = parser.get_pieces()
-
-    for i in range(len(_boards)):
-        board_renderer.redraw_board(_boards[i])
-        pieces_renderer.redraw_piece(_pieces[i])
-        window.update()
-        window.after(int(100))
+    visualize(board_renderer, pieces_renderer, parser.get_boards(), parser.get_pieces(), 0)
 
 
 window = Tk()
@@ -203,6 +221,7 @@ screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 window.geometry(str(int(screen_width)) + "x" + str(int(screen_height)))
 window.bind("<Escape>", exit_esc)
+window.bind("<Key>", change_delay)
 
 parser = GameParser()
 main()
