@@ -1,6 +1,3 @@
-import random
-import re
-import sys
 from tkinter import *
 from tkinter import font
 
@@ -24,7 +21,7 @@ class GameParser:
         self.__parse_boards()
         self.__parse_pieces()
         self.__parse_scores()
-    
+
     def __parse_names(self):
         self.__players_names = re.findall(r"\$\$\$ exec p\d : \[.*?([a-zA-Z]+\.filler)\]", self.__game_str)
 
@@ -34,7 +31,7 @@ class GameParser:
         self.__board_size["y"] = int(_groups[0])
 
     def __parse_boards(self):
-        raw_boards = re.findall(r"\d+ ([\.xXoO]+)\n", self.__game_str)
+        raw_boards = re.findall(r"\d+ ([.xXoO]+)\n", self.__game_str)
         _board = []
         for line_i in range(len(raw_boards)):
             _board.append(raw_boards[line_i])
@@ -43,19 +40,20 @@ class GameParser:
                 _board.clear()
 
     def __parse_pieces(self):
-        raw_pieces = re.findall(r"Piece (\d+) (\d+):((?:\.|\*|\n)+)", self.__game_str)
-        get_shape_func = lambda lines : list(filter(None, lines.split("\n")))
-        self.__pieces = list(map(lambda piece:  {"x": int(piece[1]), "y": int(piece[0]), "shape": get_shape_func(piece[2])}, raw_pieces))
+        raw_pieces = re.findall(r"Piece (\d+) (\d+):([.*\n]+)", self.__game_str)
+        self.__pieces = list(
+            map(lambda piece: {"x": int(piece[1]), "y": int(piece[0]),
+                               "shape": list(filter(None, piece[2].split("\n")))}, raw_pieces))
         self.__piece_size["x"] = max(self.__pieces, key=lambda piece: piece["x"])["x"]
         self.__piece_size["y"] = max(self.__pieces, key=lambda piece: piece["y"])["y"]
 
     def __parse_scores(self):
-        raw_scores = re.findall(r"== (X|O) fin: (\d+)", self.__game_str)
+        raw_scores = re.findall(r"== ([XO]) fin: (\d+)", self.__game_str)
         self.__total_scores = list(map(lambda fin: {"player": fin[0], "score": fin[1]}, raw_scores))
 
     def get_board_size(self):
         return self.__board_size
-    
+
     def get_boards(self):
         return self.__boards
 
@@ -72,43 +70,48 @@ class GameParser:
         return self.__piece_size
 
 
-class BoardRenderer:
+class GridRenderer:
     __canvas = Canvas
-    __board_size = {}
     __rect_size = 0
-    __board_rects = []
 
-    def __init__(self, board_size, canv: Canvas):
-        self.__board_size = board_size
-        self.__canvas = canv
+    def __init__(self, grid_size, canvas: Canvas):
+        self.__grid_size = grid_size
+        self.__canvas = canvas
+        self.__grid_rects = []
 
         self.__get_rect_size()
         self.__create_rects()
 
     def __get_rect_size(self):
         self.__canvas.update()
-        print("canvas width:", self.__canvas.winfo_width(), "height:", self.__canvas.winfo_height())
-        self.__rect_size = self.__canvas.winfo_height() / self.__board_size["y"]
+        self.__rect_size = self.__canvas.winfo_height() / self.__grid_size["y"]
 
     def __create_rects(self):
-        for y in range(self.__board_size["y"]):
-            for x in range(self.__board_size["x"]):
+        for y in range(self.__grid_size["y"]):
+            rects = []
+            for x in range(self.__grid_size["x"]):
                 x1 = x * self.__rect_size
                 y1 = y * self.__rect_size
                 x2 = (x + 1) * self.__rect_size
                 y2 = (y + 1) * self.__rect_size
-                self.__board_rects.append(self.__canvas.create_rectangle(x1, y1, x2, y2, fill="ghost white"))
+                rects.append(self.__canvas.create_rectangle(x1, y1, x2, y2, fill="ghost white"))
+            self.__grid_rects.append(rects.copy())
 
-    def redraw(self, _board):
-        i = 0
+    def redraw_board(self, _board):
         for y in range(len(_board)):
-            for x in range(len(_board[y])): # todo тут все факапится на фигурках, потому что у них размеры с размером поля не совпадают
-                self.__canvas.itemconfig(self.__board_rects[i], fill=get_color(_board[y][x]))
-                i += 1
-        
+            for x in range(len(_board[y])):
+                self.__canvas.itemconfig(self.__grid_rects[y][x], fill=get_color(_board[y][x]))
 
-class PiecesRenderer:
-    pass
+    def redraw_piece(self, _piece):
+        start_x = int(self.__grid_size["x"] / 2) - _piece["x"]
+        start_y = int(self.__grid_size["y"] / 2) - _piece["y"]
+        for grid_line in self.__grid_rects:
+            for grid_cell in grid_line:
+                self.__canvas.itemconfig(grid_cell, fill="ghost white")
+        for y in range(len(_piece["shape"])):
+            for x in range(len(_piece["shape"][y])):
+                self.__canvas.itemconfig(self.__grid_rects[start_y + y][start_x + x],
+                                         fill=get_color(_piece["shape"][y][x]))
 
 
 class Gui:
@@ -127,22 +130,21 @@ class Gui:
         self.__construct_board_canvas()
         self.__construct_pieces_canvas()
         self.__canvas_frame.grid(row=1, column=0, columnspan=2)
-        
+
     def __construct_board_canvas(self):
         board_ratio = parser.get_board_size()["x"] / parser.get_board_size()["y"]
         canvas_height = screen_height - screen_height / 8
         canvas_width = int(canvas_height * board_ratio)
-        self.__board_canvas = Canvas(self.__canvas_frame, width=canvas_width, height=canvas_height, \
-            highlightbackground="black", highlightthickness=4)
+        self.__board_canvas = Canvas(self.__canvas_frame, width=canvas_width, height=canvas_height,
+                                     highlightbackground="black", highlightthickness=4)
         self.__board_canvas.grid(row=0, column=0, padx=5)
 
     def __construct_pieces_canvas(self):
-        print(parser.get_piece_size())
         board_ratio = parser.get_piece_size()["x"] / parser.get_piece_size()["y"]
         canvas_height = screen_height - screen_height / 8
         canvas_width = int(canvas_height * board_ratio)
-        self.__pieces_canvas = Canvas(self.__canvas_frame, width=canvas_width, height=canvas_height, \
-            highlightbackground="black", highlightthickness=4)
+        self.__pieces_canvas = Canvas(self.__canvas_frame, width=canvas_width, height=canvas_height,
+                                      highlightbackground="black", highlightthickness=4)
         self.__pieces_canvas.grid(row=0, column=1, padx=5)
 
     def __construct_header(self):
@@ -172,34 +174,33 @@ class Gui:
 
 def exit_esc(event):
     exit(21)
-    
+
 
 def get_color(char):
-    colors = {"O": "medium blue", "o": "royal blue", "X": "forest green", "x": "lime green", ".": "ghost white", "*": "DeepPink3"}
+    colors = {"O": "medium blue", "o": "royal blue", "X": "forest green", "x": "lime green", ".": "ghost white",
+              "*": "DeepPink3"}
     return colors[char]
 
 
 def main():
     gui = Gui()
 
-    board_renderer = BoardRenderer(parser.get_board_size(), gui.get_board_canvas())
-    pieces_renderer = BoardRenderer(parser.get_piece_size(), gui.get_pieces_canvas())
+    board_renderer = GridRenderer(parser.get_board_size(), gui.get_board_canvas())
+    pieces_renderer = GridRenderer(parser.get_piece_size(), gui.get_pieces_canvas())
 
     _boards = parser.get_boards()
     _pieces = parser.get_pieces()
 
     for i in range(len(_boards)):
-        board_renderer.redraw(_boards[i])
-        print(_boards[i])
-        print(_pieces[i]["shape"])
-        pieces_renderer.redraw(_pieces[i]["shape"])
+        board_renderer.redraw_board(_boards[i])
+        pieces_renderer.redraw_piece(_pieces[i])
         window.update()
-        window.after(int(2000))
+        window.after(int(100))
 
 
 window = Tk()
-screen_width = window.winfo_screenwidth() / 2
-screen_height = window.winfo_screenheight() / 2
+screen_width = window.winfo_screenwidth()
+screen_height = window.winfo_screenheight()
 window.geometry(str(int(screen_width)) + "x" + str(int(screen_height)))
 window.bind("<Escape>", exit_esc)
 
