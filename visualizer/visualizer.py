@@ -40,7 +40,7 @@ class GameParser:
                 _board.clear()
 
     def __parse_pieces(self):
-        raw_pieces = re.findall(r"Piece (\d+) (\d+):([.*\n]+)", self.__game_str)
+        raw_pieces = re.findall(r"Piece (\d+) (\d+):([.*\n]+)<got.*\n(?!Piece)", self.__game_str)
         self.__pieces = list(
             map(lambda piece: {"x": int(piece[1]), "y": int(piece[0]),
                                "shape": list(filter(None, piece[2].split("\n")))}, raw_pieces))
@@ -103,15 +103,12 @@ class GridRenderer:
                 self.__canvas.itemconfig(self.__grid_rects[y][x], fill=get_color(_board[y][x]))
 
     def redraw_piece(self, _piece):
-        start_x = int(self.__grid_size["x"] / 2) - _piece["x"]
-        start_y = int(self.__grid_size["y"] / 2) - _piece["y"]
         for grid_line in self.__grid_rects:
             for grid_cell in grid_line:
                 self.__canvas.itemconfig(grid_cell, fill="ghost white")
         for y in range(len(_piece["shape"])):
             for x in range(len(_piece["shape"][y])):
-                self.__canvas.itemconfig(self.__grid_rects[start_y + y][start_x + x],
-                                         fill=get_color(_piece["shape"][y][x]))
+                self.__canvas.itemconfig(self.__grid_rects[y][x], fill=get_color(_piece["shape"][y][x]))
 
 
 class Gui:
@@ -131,22 +128,6 @@ class Gui:
         self.__construct_pieces_canvas()
         self.__canvas_frame.grid(row=1, column=0, columnspan=2)
 
-    def __construct_board_canvas(self):
-        board_ratio = parser.get_board_size()["x"] / parser.get_board_size()["y"]
-        canvas_height = screen_height - screen_height / 8
-        canvas_width = int(canvas_height * board_ratio)
-        self.__board_canvas = Canvas(self.__canvas_frame, width=canvas_width, height=canvas_height,
-                                     highlightbackground="black", highlightthickness=4)
-        self.__board_canvas.grid(row=0, column=0, padx=5)
-
-    def __construct_pieces_canvas(self):
-        board_ratio = parser.get_piece_size()["x"] / parser.get_piece_size()["y"]
-        canvas_height = screen_height - screen_height / 8
-        canvas_width = int(canvas_height * board_ratio)
-        self.__pieces_canvas = Canvas(self.__canvas_frame, width=canvas_width, height=canvas_height,
-                                      highlightbackground="black", highlightthickness=4)
-        self.__pieces_canvas.grid(row=0, column=1, padx=5)
-
     def __construct_header(self):
         self.__header = Frame(window)
 
@@ -165,6 +146,23 @@ class Gui:
 
         self.__header.grid(row=0, column=0, columnspan=3)
 
+    def __construct_board_canvas(self):
+        board_ratio = parser.get_board_size()["x"] / parser.get_board_size()["y"]
+        canvas_height = screen_height - screen_height / 8
+        canvas_width = int(canvas_height * board_ratio)
+        self.__board_canvas = Canvas(self.__canvas_frame, width=canvas_width, height=canvas_height,
+                                     highlightbackground="black", highlightthickness=4)
+        self.__board_canvas.grid(row=0, column=0, padx=5)
+
+    def __construct_pieces_canvas(self):
+        board_ratio = parser.get_piece_size()["y"] / parser.get_piece_size()["x"]
+        self.__board_canvas.update()
+        canvas_width = int(screen_width - self.__board_canvas.winfo_width())
+        canvas_height = int(canvas_width * board_ratio)
+        self.__pieces_canvas = Canvas(self.__canvas_frame, width=int(canvas_width / 2), height=int(canvas_height / 2),
+                                      highlightbackground="black", highlightthickness=4)
+        self.__pieces_canvas.grid(row=0, column=1, padx=5)
+
     def get_board_canvas(self):
         return self.__board_canvas
 
@@ -176,16 +174,15 @@ delay = 0.1
 
 
 def exit_esc(event):
-    exit(21)
+    exit(0)
 
 
 def change_delay(event):
     global delay
-    if event.keysym == "Up":
+    if event.keysym == "Up" and delay - 0.02 > 0:
         delay -= 0.02
     if event.keysym == "Down":
         delay += 0.02
-    print("Current delay: ", delay)
 
 
 def print_key(event):
@@ -199,9 +196,9 @@ def get_color(char):
 
 
 def visualize(board_renderer, pieces_renderer, _boards, _pieces, i):
-    if i >= len(_boards):
+    if i >= len(_boards) - 1:
         return
-    board_renderer.redraw_board(_boards[i])
+    board_renderer.redraw_board(_boards[i + 1])
     pieces_renderer.redraw_piece(_pieces[i])
     window.update()
     window.after(int(delay * 1000), visualize, board_renderer, pieces_renderer, _boards, _pieces, i + 1)
@@ -217,6 +214,7 @@ def main():
 
 
 window = Tk()
+window.wm_title("Filler visualizer by sleonard")
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 window.geometry(str(int(screen_width)) + "x" + str(int(screen_height)))
