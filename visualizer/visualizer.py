@@ -159,7 +159,7 @@ class Gui:
         self.__board_canvas.update()
         canvas_width = int(screen_width - self.__board_canvas.winfo_width())
         canvas_height = int(canvas_width * board_ratio)
-        self.__pieces_canvas = Canvas(self.__canvas_frame, width=int(canvas_width / 2), height=int(canvas_height / 2),
+        self.__pieces_canvas = Canvas(self.__canvas_frame, width=int(canvas_width / 1.3), height=int(canvas_height / 1.3),
                                       highlightbackground="black", highlightthickness=4)
         self.__pieces_canvas.grid(row=0, column=1, padx=5)
 
