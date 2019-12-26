@@ -1,3 +1,6 @@
 [submodule "libft"]
 	path = libft
 	url = https://github.com/rearming/libft.git
+[submodule "visualizer"]
+	path = visualizer
+	url = https://github.com/rearming/42-filler-graphic-visualizer
