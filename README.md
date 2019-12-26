@@ -20,10 +20,10 @@ Usage (Linux):
 ./filler_vm -f maps/map*.txt -p1 ../sleonard.filler -p2 ../sleonard.filler
 ```
 
-If you want to try it with my graphical visualizer, clone it from [here](https://github.com/rearming/42-filler-graphic-visualizer).
-Than simply redirect input of game to it:
+If you want to try it with my graphical visualizer, simply redirect input of game to it:
 ```
-./filler_vm -f maps/map*.txt -p1 ../sleonard.filler -p2 ../sleonard.filler | python3.7 visualizer.py
+cd resources
+./filler_vm -f maps/map*.txt -p1 ../sleonard.filler -p2 ../sleonard.filler | python3.7 ../visualizer/visualizer.py
 ```
 Example of visualization:
 ![Image alt](https://github.com/rearming/42-filler-graphic-visualizer/raw/master/screenshots/game2.png)
