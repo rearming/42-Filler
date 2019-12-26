@@ -6,7 +6,7 @@
 #    By: sleonard <sleonard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/05 16:40:18 by sleonard          #+#    #+#              #
-#    Updated: 2019/11/09 11:49:59 by sleonard         ###   ########.fr        #
+#    Updated: 2019/12/26 14:00:22 by sleonard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,7 @@ all: update $(OBJ_DIR) $(NAME)
 
 update:
 	@git submodule init
-	@git submodule update
+	@git submodule update --merge --remote
 
 -include: $(DEPS)
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
